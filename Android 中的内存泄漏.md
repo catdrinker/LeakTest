@@ -27,13 +27,13 @@
 
 ## java运行时内存结构 
 
-`java` 运行时内存主要分为：`java栈`，`本地方法栈`，`程序计数器`，`方法区`和`堆`。 ![enter image description here](https://images2015.cnblogs.com/blog/331425/201606/331425-20160623115846235-947282498.png) 
+`java` 运行时内存主要分为：`java栈`，`本地方法栈`，`程序计数器`，`方法区`和`堆`。 ![jvm运行时结构](https://images2015.cnblogs.com/blog/331425/201606/331425-20160623115846235-947282498.png) 
 
 ### 栈内存 
 
 栈是线程私有的内存空间，对于一个线程而言，每一个方法被执行就伴随着一个栈帧入栈，方法执行完毕就伴随着 一个栈帧出栈。
 
-![enter image description here](https://www.jiafly.com/image/jvm/jvm-stack.jpg) 
+![jvm栈](https://www.jiafly.com/image/jvm/jvm-stack.jpg) 
 
 **栈帧：** `栈帧`是支持虚拟机方法执行和调用的一个数据结构，每当一个新的方法被执行就会生成一个新的`栈帧`，`栈帧`存储了方法的`局部变量表`，`操作数栈`，`动态链接`，`方法返回地址`和一些额外信息。 在编译代码的时候，栈帧中需要多大的`局部变量表`和`操作数栈`的深度就已经确定了，被写进字节码的方法表`Code`属性中。
 
@@ -120,7 +120,7 @@ object Utils {
 public void show(@NonNull FragmentManager manager, @Nullable String tag) {
         mDismissed = false;
         mShownByMe = true;
-        FragmentTransaction ft = manager.beginTransaction();
+        FragmentTransaction ft = manager.beginTransaction();a
         ft.add(this, tag);
         ft.commit();
 }
