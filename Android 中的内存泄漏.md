@@ -557,3 +557,10 @@ abstract class MainCallback(val key: String) : Callback
 其引用如下：
 
 ![自定义控制生命周期剥离](https://raw.githubusercontent.com/catdrinker/LeakTest/master/image/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E5%88%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%89%A5%E7%A6%BB.png)
+
+### 检测内存泄漏
+
+1. 输出`adb`命令检测，快速进入和退出多次可能泄漏的页面和执行泄漏可能产生的操作。最后退回后输出命令`adb shell dumpsys meminfo com.xx.xxx`,这里的`com.xx.xx`是应用的包名。
+2. 通过`Android Studio`自带的`Profile`工具，执行可能泄漏的操作，退出页面后快速点击`GC`的按钮，按下`dump`dump出当前的内存，通过`filter`出相关类名，即可看到当前实例的个数，若大于0，则说明发生了泄漏。
+3. 通过`mat`，`mat`主要用来分析泄漏的原因，根据可达性分析算法列出整条引用链，即可根据引用链推导出泄漏产生的地方。
+4. 应用接入`leakcanary`在开发阶段分析可能产生的内存泄漏，出现泄漏会列出相关的引用链定位泄漏源。

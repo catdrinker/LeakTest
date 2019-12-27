@@ -33,10 +33,11 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Log.i("MainActivity", "remove all callback")
-        controller.removeCallback(key)
     }
 
     override fun onDestroy() {
+        Log.i("MainActivity", "onDestroy")
+        controller.removeCallback(key)
         super.onDestroy()
     }
 
