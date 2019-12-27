@@ -414,11 +414,13 @@ class LifecycleBoundObserver extends ObserverWrapper implements GenericLifecycle
             }
             activeStateChanged(shouldBeActive());
         }
-	}
+}
+	  
+```
 
-	@Override
-  void detachObserver() {mOwner.getLifecycle().removeObserver(this);}
-  
+```java
+    @Override
+    void detachObserver() {mOwner.getLifecycle().removeObserver(this);}
 ```
 
 ```java
