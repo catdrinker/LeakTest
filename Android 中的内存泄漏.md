@@ -188,7 +188,7 @@ class HomeActivity : AppCompatActivity() {
 
  这种情况的实际引用如下图： 
 
-![handler 泄漏](https://github.com/catdrinker/LeakTest/blob/master/image/handler%20%E6%B3%84%E6%BC%8F.png)
+![handler 泄漏](https://raw.githubusercontent.com/catdrinker/LeakTest/master/image/handler%20%E6%B3%84%E6%BC%8F.png)
 
 可以看到,由于`MessageQueue`在`Looper.looper()`的方法栈帧中的局部变量表中，因此`MessageQueue`不会被释放，当调用`handler.post/postDelayed(Runnable)`会将该`Runnable`包装成`Message`对象放进队列。由于匿名内部类`Runnable`持有`Activity`的引用，如果只是正常的在主线程`post`是没有问题的，因为马上就会被消费掉，而调用了`postDelay`的`Message`则会被按时间顺序被排在队列靠后的某个位置，等到了时间才会去消费。 
 
@@ -242,7 +242,7 @@ class Controller {
 
  这种情况下的实际引用如下图：
 
-![callback泄漏](https://github.com/catdrinker/LeakTest/blob/master/image/callback%E6%B3%84%E6%BC%8F.png)
+![callback泄漏](https://raw.githubusercontent.com/catdrinker/LeakTest/master/image/callback%E6%B3%84%E6%BC%8F.png)
 
 可以看到，`ActivityThread`相关方法上的局部变量表会短暂的持有`activity`，伴随着方法出栈又回断开这种引用。 同样的对于`ActivityThread`的`mActivities`这个用来存储正在运行的`activity`的容器，也会伴随着相关`activity`的生命周期来持有和释放`activity`。而上述代码的情况是导致开了一个新的线程，从而创建了一个新的栈帧，其中`Thread/Runnable`的`run()`方法中的局部变量表持有了`callback`从而间接的持有了`activity`，这种引用会直到该线程运行结束伴随着该线程方法栈的销毁，才会被释放掉。 
 
@@ -312,7 +312,7 @@ private void removeAnimationCallback() {
 
 这种情况实际引用如下图 
 
-![动画泄漏](https://github.com/catdrinker/LeakTest/blob/master/image/%E5%8A%A8%E7%94%BB%E6%B3%84%E6%BC%8F.png)
+![动画泄漏](https://raw.githubusercontent.com/catdrinker/LeakTest/master/image/%E5%8A%A8%E7%94%BB%E6%B3%84%E6%BC%8F.png)
 
 当调用`cancel()`以后，`AnimationHandler`单例对`Animator`引用释放，即使此时`Animator`仍然持有`Activity`的引用，由于从`GC ROOT`找不到它们，仍然会被`GC`回收。 
 
@@ -437,7 +437,7 @@ public void removeObserver(@NonNull final Observer<? super T> observer) {
 
 在`removeObserver`的时候，移除了`livedata`中的`mObservers`的引用和`LifecycleRegistry`中`mObserverMap`的引用。 这样其实就是其实就是由于`observer`作为匿名内部类持有`activity/fragment`引用，在需要的时候将`observer`的引用加入到`livedata`模块，们在`activity/fragment`的`destory`中又解除了对`observer`的引用，通过对生命周期的管理来控制引用的指向和释放，来达到避免内存泄漏的目的。
 
-![livedata 内存管理](https://github.com/catdrinker/LeakTest/blob/master/image/livedata%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.png)
+![livedata 内存管理](https://raw.githubusercontent.com/catdrinker/LeakTest/master/image/livedata%20%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86.png)
 
 ##### 关于自定义view 
 
@@ -556,4 +556,4 @@ abstract class MainCallback(val key: String) : Callback
 
 其引用如下：
 
-![自定义控制生命周期剥离](https://github.com/catdrinker/LeakTest/blob/master/image/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E5%88%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%89%A5%E7%A6%BB.png)
+![自定义控制生命周期剥离](https://raw.githubusercontent.com/catdrinker/LeakTest/master/image/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E5%88%B6%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%89%A5%E7%A6%BB.png)
