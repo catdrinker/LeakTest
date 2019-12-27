@@ -244,11 +244,11 @@ class Controller {
 
 ![callback泄漏](https://raw.githubusercontent.com/catdrinker/LeakTest/master/image/callback%E6%B3%84%E6%BC%8F.png)
 
-可以看到，`ActivityThread`相关方法上的局部变量表会短暂的持有`activity`，伴随着方法出栈又回断开这种引用。 同样的对于`ActivityThread`的`mActivities`这个用来存储正在运行的`activity`的容器，也会伴随着相关`activity`的生命周期来持有和释放`activity`。而上述代码的情况是导致开了一个新的线程，从而创建了一个新的栈帧，其中`Thread/Runnable`的`run()`方法中的局部变量表持有了`callback`从而间接的持有了`activity`，这种引用会直到该线程运行结束伴随着该线程方法栈的销毁，才会被释放掉。 
+可以看到，`ActivityThread`相关方法上的局部变量表会短暂的持有`activity`，伴随着方法出栈又回断开这种引用。 同样的对于`ActivityThread`的`mActivities`这个用来存储正在运行的`activity`的容器，也会伴随着相关`activity`的生命周期来持有和释放`activity`。而上述代码的情况是导致开了一个新的线程，从`native`层持有了该`Thread`实例的引用，而`Thread`又间接的持有了`activity`， 当线程中的方法执行完毕或者被主动中断，才会释放掉这个引用，从而`activity`到`Thread`对象的引用链由于没有`GC ROOT`，会被`GC`回收内存。
 
 这样就引发了内存泄漏。如果该线程是在有限的时间内运行结束，那么`callback/activity`泄漏的时间是有限的，这种泄漏认为是一个**短时间的内存泄漏**。 
 
-如果这个线程设定为不可结束，这个栈不会被销毁，那么`activity`永远不会被回收，这种泄漏后果会更加严重，一份无法被回收的内存，尤其是`activity`的内存，会大大增加应用`oom`的风险。这种泄漏是永久性内存泄漏。 
+如果这个线程设定为不可结束，`native`对该`Thread`对象的引用一直存在，那么`activity`除非`vm`进程被杀否则永远都不会被回收，这种泄漏后果会更加严重，一份无法被回收的内存，尤其是`activity`的内存，会大大增加应用`oom`的风险。这种泄漏是**永久性内存泄漏**。  
 
 #### 动画引发的内存泄漏 
 
