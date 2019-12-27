@@ -1,6 +1,5 @@
 package com.tt.leaktest
 
-import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -19,8 +18,6 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         handler.postDelayed(r, 3000)
-        ObjectAnimator.ofFloat()
-
     }
 
     override fun onDestroy() {
