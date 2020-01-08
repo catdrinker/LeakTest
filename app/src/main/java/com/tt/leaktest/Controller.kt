@@ -44,5 +44,24 @@ class Controller {
         callbacks.remove(key)
     }
 
+    private var callback: Callback? = null
+
+    fun startCallback(callback: Callback) {
+        synchronized(this) {
+            seq++
+            this.callback = callback
+        }
+        Thread {
+            Thread.sleep(2000)
+            this.callback?.onCallback(seq)
+        }.start()
+    }
+
+    fun removeCallback() {
+        this.callback = null
+    }
+
+
+
     abstract inner class MyRunnable(val mSeq: Int) : Runnable
 }
